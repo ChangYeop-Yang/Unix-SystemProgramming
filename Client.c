@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 
 void error_handling(char * msg);
+void * send_msg(void * arg);
+void * recv_msg(void * arg);
 
 int main(int argc, char *argv[])
 {
@@ -33,6 +35,28 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+// send thread main
+void * send_msg(void * arg)   
+{
+   int sock = *((int*)arg);
+   char name_msg[NAME_SIZE + BUF_SIZE];
+
+   while(1)
+   {
+      fgets(msg, BUF_SIZE, stdin);
+      if (!strcmp(msg, "q\n"))
+      {
+         exit(0);
+      }
+      sprintf(name_msg,  msg);
+      write(sock, name_msg, strlen(name_msg));
+   }
+   return NULL;
+}
+
+// read thread main
+void * recv_msg(void * arg){}
 
 //error check
 void error_handling(char *msg)
