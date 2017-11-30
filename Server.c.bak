@@ -46,9 +46,6 @@ typedef struct users
 int anUser_Name_Flag[FLAG_USER_NUM];
 USER asUser_Current[FLAG_USER_NUM];
 
-void handle_Error(const short sError);
-void send_Msg(const int nSocket, const ssize_t nLength, const char * sMsg);
-
 /* Typedef */
 typedef struct sockaddr_in SOCK_IN;
 
@@ -83,27 +80,11 @@ int main(int argc, char * argv[])
         socklen_t unClnt_Adr_Sz = sizeof(sClnt_Adr);
         if ((nClnt_Sock = accept(nServ_Sock, (struct sockaddr *)&sClnt_Adr, &unClnt_Adr_Sz)) == EOF) { break; }
 
+		pthread_create(&read_id, NULL, NULL, (void*)&nClnt_Sock);
+        pthread_detach(read_id);
     }
     
     close(nServ_Sock);
 
 	return 0;
-}
-
-void send_Msg(const int nSocket, const ssize_t nLength, const char * sMsg)
-{
-    write(nSocket, sMsg, nLength);
-}
-
-void handle_Error(const short sError)
-{
-    switch (sError)
-    {
-        case (FLAG_IP_ERROR): { printf("Using Current IP Address Error!!!\n"); break; }
-        case (FLAG_SOCKET_ERROR): { printf("Create Socket Error!!!\n"); break; }
-        case (FLAG_CONNECT_ERROR): { printf("Connect Server Error!!!\n"); break; }
-        case (FLAG_BIND_ERROR): { printf("Bind Socket Error!!!\n"); break; }
-        case (FLAG_LISTEN_ERROR): { printf("Listen Socket Error!!!\n"); break; }
-        default: { printf("Network UnKnown Error!!!\n"); break; }
-    }
 }
