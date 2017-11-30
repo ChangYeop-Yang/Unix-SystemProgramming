@@ -1,3 +1,10 @@
+/*
+- file: Client.c
+- author: 2015115939_양현아
+- datetime: 2017-11-30 20:06
+- description: sock() -> connect() -> read()/write() -> close 구성의 클라이언트 구현. 입력받은 메시지를 서버에게 write한다.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> 
@@ -45,8 +52,9 @@ void * send_msg(void * arg)
    while(1)
    {
       fgets(msg, BUF_SIZE, stdin);
-      if (!strcmp(msg, "q\n"))
+      if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n"))
       {
+		 close(sock); //close로 sock 닫아서 연결 종료
          exit(0);
       }
       sprintf(name_msg,  msg);
