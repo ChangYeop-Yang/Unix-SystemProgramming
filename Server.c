@@ -1,4 +1,11 @@
 
+/*
+ *file:server_login.c
+ *author:2015113013_우성연
+ *datetime:2017_12_01 09:12
+ *description : join_member, login_member
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,8 +55,8 @@ USER asUser_Current[FLAG_USER_NUM];
 
 void handle_Error(const short sError);
 void send_Msg(const int nSocket, const ssize_t nLength, const char * sMsg);
-void join_member();
-void login_member();
+void join_member(const char * sBuf, const int nSock, const int msgSz);
+void login_member(const char * sBuf, const int nSock, const int msgSz);
 
 /* Typedef */
 typedef struct sockaddr_in SOCK_IN;
@@ -110,7 +117,7 @@ void handle_Error(const short sError)
     }
 }
 
-void join_member()
+void join_member(const char * sBuf, const int nSock, const int msgSz)
 {
 	/* String */
 	char sID_temp[BUF_REG];
@@ -204,25 +211,39 @@ void login_member(const char * sBuf, const int nSock, const int msgSz)
 			{
 				/* Select FileDescription */
 				for(size_t ii=0; ii<nCurrent_User_Num; ii++)
-				{
-					
-					if(nSock == asUser_nCurrent[ii].nFileDiscript)					{					/													//ID
+				{			
+					if(nSock == asUser_nCurrent[ii].nFileDiscript)					
+					{																											{
+						//ID
 						strcpy(asUser_Current[ii].sID, sID_temp);
 						//Password
 						strcpy(asUser_Current[ii].sPassword, sPasswd_temp);
 						asUser_Current[ii].sLoginState = FLAG_TRUE;
 						break;
 					}
-				}
-			}	
-			sMessage = "Login successful\n";
-			send_Msg(nSock, sizeof("Login successful\n"), sMessage);
-			FILe * fWrite = fopen("member_list","ab");
+				}			
+				sMessage = "Login successful\n";
+				send_Msg(nSock, sizeof("Login successful\n"), sMessage);
+				FILE * fWrite = fopen("member_list","ab");
 			
-			/* Write Struct for puts Socket Discripter */
-			
+				/* Write Struct for puts Socket Discripter */
+				fwrite(insert_UserData(nSock, 0, sID_temp, sPasswd_temp), sizeof(USER), 1, fWrite);
+				
+				/* Close File */
+				fclose(fWrite);
+				fclose(fRead);
+				pthread_mutex_unlock(&pMutx);
+				return;					
+			}
 		}
-
+	
+		/* File Close */
+		fclose(fRead);
 	}
 	
+	pthread_mutex_unlock(&pMutx);
+	sMessage = "Login fail\n";
+	send_Msg(nSock, sizeof("Login fail\n"), sMessage);
+	return;
 }
+	
