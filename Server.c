@@ -123,10 +123,11 @@ void join_member()
 	/* Integer */
 	size_t nPosition = 10;
 	size_t nChecking = FLAG_FALSE;
+	int ii;
 	//ID
-	for(int ii = 0;sBuf[nPosition] != ' ';sID_temp[ii++]=sBuf[nPosition++]);
+	for(ii = 0;sBuf[nPosition] != ' ';sID_temp[ii++]=sBuf[nPosition++]);
 	//Password
-	for(int ii = 0;sBuf[nPosition] != '\n';sPasswd_temp[ii++]=sBuf[nPosition++]);
+	for(ii = 0;sBuf[nPosition] != '\n';sPasswd_temp[ii++]=sBuf[nPosition++]);
 	
 	pthread_mutex_lock(&pMutx);
 	
@@ -148,7 +149,7 @@ void join_member()
 				return;
 			}
 		}
-		/* Close FIle */
+		/* Close File */
 		fclose(fRead);
 	}
 	if(nChecking == FLAG_FALSE)
@@ -182,10 +183,11 @@ void login_member(const char * sBuf, const int nSock, const int msgSz)
 	
 	/* Integer */
 	size_t nPosition = 7;
+	int ii;
 	//ID
-	for(int ii = 0; sBuf[nPosition] != ' '; sID_temp[ii++] = sBuf[nPosition++]);
+	for(ii = 0; sBuf[nPosition] != ' '; sID_temp[ii++] = sBuf[nPosition++]);
 	//Password
-	for(int ii = 0; sBuf[nPosition] != '\n'; sPasswd_temp[ii++] = sBuf[nPosition++]);
+	for(ii = 0; sBuf[nPosition] != '\n'; sPasswd_temp[ii++] = sBuf[nPosition++]);
 	
 	pthread_mutex_lock(&pMutx);
 	
@@ -201,8 +203,24 @@ void login_member(const char * sBuf, const int nSock, const int msgSz)
 			if(strcmp(sUser_Temp->sID, sID_temp) == 0 && strcmp(sUser_Temp->sPassword, sPassword_Temp)==0)
 			{
 				/* Select FileDescription */
-				for(size_t ii=0;ii<;)
+				for(size_t ii=0; ii<nCurrent_User_Num; ii++)
+				{
+					
+					if(nSock == asUser_nCurrent[ii].nFileDiscript)					{					/													//ID
+						strcpy(asUser_Current[ii].sID, sID_temp);
+						//Password
+						strcpy(asUser_Current[ii].sPassword, sPasswd_temp);
+						asUser_Current[ii].sLoginState = FLAG_TRUE;
+						break;
+					}
+				}
 			}	
+			sMessage = "Login successful\n";
+			send_Msg(nSock, sizeof("Login successful\n"), sMessage);
+			FILe * fWrite = fopen("member_list","ab");
+			
+			/* Write Struct for puts Socket Discripter */
+			
 		}
 
 	}
