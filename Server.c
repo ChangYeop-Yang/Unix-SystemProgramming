@@ -48,6 +48,8 @@ USER asUser_Current[FLAG_USER_NUM];
 
 void handle_Error(const short sError);
 void send_Msg(const int nSocket, const ssize_t nLength, const char * sMsg);
+void join_member();
+void login_member();
 
 /* Typedef */
 typedef struct sockaddr_in SOCK_IN;
@@ -106,4 +108,103 @@ void handle_Error(const short sError)
         case (FLAG_LISTEN_ERROR): { printf("Listen Socket Error!!!\n"); break; }
         default: { printf("Network UnKnown Error!!!\n"); break; }
     }
+}
+
+void join_member()
+{
+	/* String */
+	char sID_temp[BUF_REG];
+	char sPasswd_temp[BUF_REG];
+	char *sMessage;
+	
+	/* Struct User */
+	USER * sCheck_temp = MALLOC(USER, 1);
+	
+	/* Integer */
+	size_t nPosition = 10;
+	size_t nChecking = FLAG_FALSE;
+	//ID
+	for(int ii = 0;sBuf[nPosition] != ' ';sID_temp[ii++]=sBuf[nPosition++]);
+	//Password
+	for(int ii = 0;sBuf[nPosition] != '\n';sPasswd_temp[ii++]=sBuf[nPosition++]);
+	
+	pthread_mutex_lock(&pMutx);
+	
+	/* Overlap Id Check */
+	FILE * fRead = fopen("member_list", "rb");
+	if(fRead != NULL)
+	{
+		/* Read struct */
+		while(fread(sCheck_temp, sizeof(USER), 1, fRead) >0)
+		{
+			if(strcmp(sCheck_temp->sID, sID_temp) == 0)
+			{
+				printf("Incorrect registration\n"):
+				sMessage="Incorrect registration\n";
+				nChecking = FLAG_TRUE;
+				send_Msg(nSock, sizeof("Incorrect registration\n"), sMessage);
+				fclose(fRead);
+				pthread_mutex_unlock(&pMutx);
+				return;
+			}
+		}
+		/* Close FIle */
+		fclose(fRead);
+	}
+	if(nChecking == FLAG_FALSE)
+	{
+		/* Not overlap ID */
+		FILE * fWrite = fopen("member_list","ab");
+		if(fWrite != NULL)
+		{
+			/* Write struct */
+			fwrite(insert_UseData());
+				
+			/* Register Print */
+			printf("%s is registered\n",sID_temp);
+					
+			/* Close file */	
+			fclose(fWrite);
+		}
+	}
+	pthread_mutex_unlock(&pMutx);
+	sMessage = "Registration success\n";
+	send_Msg(nSock, sizeof("Registration success\n"), sMessage);
+	return;
+}
+
+void login_member(const char * sBuf, const int nSock, const int msgSz)
+{
+	/* String */
+	char sID_temp[BUF_REG];
+	char sPasswd_temp[BUF_REG];
+	char *sMessage;
+	
+	/* Integer */
+	size_t nPosition = 7;
+	//ID
+	for(int ii = 0; sBuf[nPosition] != ' '; sID_temp[ii++] = sBuf[nPosition++]);
+	//Password
+	for(int ii = 0; sBuf[nPosition] != '\n'; sPasswd_temp[ii++] = sBuf[nPosition++]);
+	
+	pthread_mutex_lock(&pMutx);
+	
+	/* FILE */
+	FILE * fRead = fopen("member_list", "rb");
+	if(fRead != NULL)
+	{
+		/* Struct Users */
+		USER * sUser_Temp = MALLOC(USER, 1);
+		while(fread(sUser_Temp, sizeof(USER),1,fRead) >0)
+		{
+			/* Login Success */		
+			if(strcmp(sUser_Temp->sID, sID_temp) == 0 && strcmp(sUser_Temp->sPassword, sPassword_Temp)==0)
+			{
+				/* Select FileDescription */
+				for(size_t ii=0;ii<;)
+			}	
+		}
+
+	}
+	
 }
