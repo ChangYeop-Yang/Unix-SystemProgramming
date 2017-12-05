@@ -36,3 +36,8 @@ Understanding Unix/Linux Programming, BruceMolay, PrenticeHall.
 |15st Week |	Final exam.|
 
 * * *
+
+**⌘Syllabus**
+
+![Alt text](https://github.com/ChangYeop-Yang/Unix-SystemProgramming/blob/master/Course%20Info%201.jpg)
+![Alt text](https://github.com/ChangYeop-Yang/Unix-SystemProgramming/blob/master/Course%20Info%202.jpg)
