@@ -3,19 +3,19 @@
 
 * * *
 
-**⌘Course Goals and Objectives**
+**⌘ Course Goals and Objectives**
 
 This course cover all the major ideas of Unix programming; file I/O, file systems, device I/O, terminal driver, timers, signals, processes, pipes, stream and datagram sockets, network programming, POSIX threads, and semaphores. Students will be expected to write programs that make full use of operating system services, while learning how Unix/Linux works.
 
 * * *
 
-**⌘Textbook and other references**
+**⌘ Textbook and other references**
 
 Understanding Unix/Linux Programming, BruceMolay, PrenticeHall.
 
 * * *
 
-**⌘Course Lesson Plan**
+**⌘ Course Lesson Plan**
 
 |Week|Title|
 |:-------:|----------------------------------------|
@@ -37,7 +37,7 @@ Understanding Unix/Linux Programming, BruceMolay, PrenticeHall.
 
 * * *
 
-**⌘Syllabus**
+**⌘ Syllabus**
 
 ![Alt text](https://github.com/ChangYeop-Yang/Unix-SystemProgramming/blob/master/Course%20Info%201.jpg)
 ![Alt text](https://github.com/ChangYeop-Yang/Unix-SystemProgramming/blob/master/Course%20Info%202.jpg)
