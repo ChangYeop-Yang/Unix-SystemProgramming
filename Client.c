@@ -11,6 +11,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <pthread.h>
 
 void error_handling(char * msg);
 void * send_msg(void * arg);
@@ -20,6 +21,10 @@ int main(int argc, char *argv[])
 {
 	int sock;
 	struct sockaddr_in serv_addr;
+
+	pthread_t snd_thread, rcv_thread;
+   void * thread_return;
+
 	if (argc != 3) {
 		printf("Usage : %s <IP> <port>\n", argv[0]);
 		exit(1);
@@ -36,6 +41,11 @@ int main(int argc, char *argv[])
 	//connet
 	if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
 		error_handling("connect() error");
+
+	pthread_create(&snd_thread, NULL, send_msg, (void*)&sock);
+   pthread_create(&rcv_thread, NULL, recv_msg, (void*)&sock);
+   pthread_join(snd_thread, &thread_return);
+   pthread_join(rcv_thread, &thread_return);
 
 	//close
 	close(sock);
