@@ -1,9 +1,9 @@
 
 /*
- *file:server_login.c
- *author:2015113013_우성연
- *datetime:2017_12_01 09:12
- *description : join_member, login_member
+ *file:server.c
+ *author:양창엽 양현아 우성연 왕신자
+ *datetime:2017_12_08 10:47
+ *description : select_position, select_nickname
  */
 
 #include <stdio.h>
@@ -53,8 +53,10 @@ typedef struct users
 int anUser_Name_Flag[FLAG_USER_NUM];
 USER asUser_Current[FLAG_USER_NUM];
 
+int select_Position();
 void handle_Error(const short sError);
 void send_Msg(const int nSocket, const ssize_t nLength, const char * sMsg);
+char * Select_Nickname(const int nSock);
 void join_member(const char * sBuf, const int nSock, const int msgSz);
 void login_member(const char * sBuf, const int nSock, const int msgSz);
 
@@ -99,6 +101,17 @@ int main(int argc, char * argv[])
 	return 0;
 }
 
+int select_Position()
+{
+	/* Integer */
+	int nPosition = 0;
+	
+	for(nPosition = 0; anUser_Name_Flag[nPosition]; nPosition ++);
+	anUser_Name_Flag[nPosition] = FLAG_TRUE;
+
+	return nPosition;
+}
+
 void send_Msg(const int nSocket, const ssize_t nLength, const char * sMsg)
 {
     write(nSocket, sMsg, nLength);
@@ -115,6 +128,27 @@ void handle_Error(const short sError)
         case (FLAG_LISTEN_ERROR): { printf("Listen Socket Error!!!\n"); break; }
         default: { printf("Network UnKnown Error!!!\n"); break; }
     }
+}
+
+char * Select_Nickname(const int nSock)
+{
+	/* string */
+	char * sNickname=MALLOC(char, BUFSIZ);
+
+	/* Integer */
+	int ii=0;
+
+	/* select User Nickname */
+	for(ii=0; ii<FLAG_USER_NUM; ii++)
+	{
+		/* select User Nickname Success */
+		if(nSock == asUser_Current[ii].nFileDiscript)
+		{
+			sprintf(sNickname,"%s", asUser_Current[ii].sID);
+		}
+	}
+
+	return sNickName;
 }
 
 void join_member(const char * sBuf, const int nSock, const int msgSz)
