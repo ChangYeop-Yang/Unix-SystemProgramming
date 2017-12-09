@@ -1,0 +1,15 @@
+.:
+total 24
+drwxr-xr-x 3 pi pi 4096 Oct 11 00:30 .
+drwxr-xr-x 3 pi pi 4096 Oct 11 00:22 ..
+drwxr-xr-x 2 pi pi 4096 Oct 11 00:24 a
+-rw-r--r-- 1 pi pi  248 Oct 11 00:30 m
+-rw-r--r-- 1 pi pi    0 Oct 11 00:32 m.txt
+-rw-r--r-- 2 pi pi   10 Oct 11 00:28 xlink
+-rw-r--r-- 1 pi pi  791 Oct 11 00:23 y
+
+./a:
+total 12
+drwxr-xr-x 2 pi pi 4096 Oct 11 00:24 .
+drwxr-xr-x 3 pi pi 4096 Oct 11 00:30 ..
+-rw-r--r-- 2 pi pi   10 Oct 11 00:28 x

@@ -1,0 +1,21 @@
+/*
+
+*/
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <string.h>
+
+/* Declear Function  */
+ino_t get_inode(char *);
+void printpathto(ino_t);
+void inum_to_name(ino_t, char *, int);
+
+int main(void)
+{
+	return;
+}
+
+/* Define Function  */

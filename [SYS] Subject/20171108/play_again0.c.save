@@ -1,0 +1,4 @@
+- file: 파일 이름 (ex. my_write.c)
+- author: 학번_이름
+- datetime: 작성 날짜 및 시간 (ex. 2017-09-17 10:00)
+- description: 각 소스에 대한 간단한 설명

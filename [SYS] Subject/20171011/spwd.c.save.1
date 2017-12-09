@@ -1,0 +1,39 @@
+/*
+- file: spwd.c
+- author: 2015118527_양창엽
+- datetime: 2017-10-18 14:34
+- description: 각 소스에 대한 간단한 설명
+*/
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <string.h>
+
+/* Declear Function  */
+ino_t get_inode(char *);
+void printpathto(ino_t);
+void inum_to_name(ino_t, char *, int);
+
+int main(void)
+{
+	
+
+	return;
+}
+
+/* Define Function  */
+void printpathto(ino_t this_inode) {
+	ino_t	my_inode;
+	char	its_name[BUFSIZ];
+
+	if (get_inode("..") != this_inode) {
+		chdir("..");	/* Up One Directory  */
+		inum_to_name(this_inode, its_name, BUFSIZ); 	/* Get Its Name  */
+
+		my_inode = get_inode(".");
+		printpathto(my_inode);
+		printf("\%s", its_name);
+	}
+}
