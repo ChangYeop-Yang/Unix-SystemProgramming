@@ -2,8 +2,8 @@
 /*
  *file:server.c
  *author:양창엽 양현아 우성연 왕신자
- *datetime:2017_12_08 10:47
- *description : select_position, select_nickname
+ *datetime:2017_12_10 12:06
+ *description : pthread, handle_Read, ban_Member
  */
 
 #include <stdio.h>
@@ -54,11 +54,13 @@ int anUser_Name_Flag[FLAG_USER_NUM];
 USER asUser_Current[FLAG_USER_NUM];
 
 int select_Position();
+void * handle_Read(void * arg);
 void handle_Error(const short sError);
 void send_Msg(const int nSocket, const ssize_t nLength, const char * sMsg);
 char * Select_Nickname(const int nSock);
-void join_member(const char * sBuf, const int nSock, const int msgSz);
-void login_member(const char * sBuf, const int nSock, const int msgSz);
+void join_Member(const char * sBuf, const int nSock, const int msgSz);
+void login_Member(const char * sBuf, const int nSock, const int msgSz);
+void ban_Member(const char * sBuf, const int nSock, const int msgSz);
 
 /* Typedef */
 typedef struct sockaddr_in SOCK_IN;
@@ -93,8 +95,25 @@ int main(int argc, char * argv[])
     {
         socklen_t unClnt_Adr_Sz = sizeof(sClnt_Adr);
         if ((nClnt_Sock = accept(nServ_Sock, (struct sockaddr *)&sClnt_Adr, &unClnt_Adr_Sz)) == EOF) { break; }
+		
+		const int nPosition = select_Position();
+		USER * sTemp_User = insert_UserData(nClnt_Sock, nPosition, "NoUser", "NoUser");
+		char * sTemp_String = (char*)malloc(sizeof(char) * BUFSIZ);
 
-    }
+		asUser_Current[nPosition] = *sTemp_User;
+		sprintf(sTemp_String, "Connection Success, Your ID is User %d\n", sTemp_User->nVersion + 1);
+		send_Msg(sTemp_User->nFileDiscript, strlen(sTemp_String), sTemp_String);
+
+		/* Memory reset */
+		free(sTemp_User);
+		free(sTemp_String);
+
+		pthread_creat(&read_id, NULL, handle_Read, (void*)&nClnt_Sock);
+		pthread_detach(read_id);
+
+		/* Printf Current total user number */
+		printf("New client is connectd - Number of total client is %d\n", ++nCurrent_User_Num);
+	}
     
     close(nServ_Sock);
 
@@ -115,6 +134,66 @@ int select_Position()
 void send_Msg(const int nSocket, const ssize_t nLength, const char * sMsg)
 {
     write(nSocket, sMsg, nLength);
+}
+
+void * handle_Read(void * arg)
+{
+	/* Integer */
+	ssize_t nStr_Len = 0;
+	ssize_t nPosition = 0;
+	int nClnt_Sock = *((int *)arg);
+	int ii = 0;
+	short sendTrue = FLAG_TRUE;
+
+	/* Char */
+	char sMsg[BUFSIZ];
+	memset(sMsg, 0, sizeof(sMsg));
+
+	while((nStr_Len = read(nClnt_Sock, sMsg, sizeof(sMsg))) != 0)
+	{
+		if(sMsg[0]=='/')
+		{
+			switch(sMsg[1])
+			{
+				/* Register */
+				case ('r') : {join_Member(sMsg, nClnt_Sock, nStr_Len); break;}
+				/* Login */
+				case ('l') : {login_Member(sMsg, nClnt_Sock, nStr_Len); break;}
+				/* Game */
+				case ('g') :
+				/* Ban */
+				case ('b') : {ban_Member(sMsg, nClnt_Sock, nStr_Len); break;}
+				/* Whisper */
+				case ('w') :
+
+				default : {send_Msg(nClnt_Sock, sizeof(char) * 18, "Not correct Order \n"); break;}
+			}
+		}
+	}
+
+	pthread_mutex_lock(&pMutx)
+	{
+		/* Remove Disconnected Client */
+		for(ii=0; ii<nCurrent_User_Num; ii++)
+		{
+			if(nClnt_Sock == asUser_Current[ii].nFileDiscript)
+			{
+				/* Printf Current total user number */
+				printf("User %d is disconnected - Number of total clinet is %d\n", asUser_Currnet[ii].nVersion + 1, --nCurrent_User_Num);
+
+				/* Disenable UserID */
+				anUser_Name_Flag[asUser_Current[ii].nVersion] = FLAG_FALSE;
+
+				while(ii++ < nCurrent_User_Num {asUser_Current[ii] = asUser_Current[ii + 1]; }
+				break;
+			}
+		}
+	}
+	pthread_mutex_unlock(&pMutx);
+
+	/* Reset memory */
+	close(nClnt_Sock);
+	return NULL;
 }
 
 void handle_Error(const short sError)
@@ -151,7 +230,66 @@ char * Select_Nickname(const int nSock)
 	return sNickName;
 }
 
-void join_member(const char * sBuf, const int nSock, const int msgSz)
+void ban_Member (const char * sBuf, const int nSock, const int msgSz)
+{
+	/* String */
+	char sID_Temp[BUF_REG];
+	char *sMessage;
+
+	/* Struct User */
+	USER * sbUer_Temp = MALLOC(USER, 1);
+
+	/* Integer */
+	size_t nPosition = 3;
+	int ii = 0;
+	int a = 0;
+
+	for(ii = 0; sBuf[nPosition] != '\n'; sID_Temp[ii++] sBuf[nPosition++]);
+	pthread_mutex_lock(&pMutx);
+	FILE * fRead = fopen("member_list","rb");
+	while(fread(sbUser_Temp, sizeof(USER), 1, fRead) >0)
+	{
+		for(size_t ii=0; ii<nCurrent_User_Num; ii++)
+		{
+			//if user is not Login Status
+			if(nSock == asUser_Current[ii].nFileDiscript && asUser_Current[ii].sLoginState == FLAG_FALSE)
+			{
+				sMessage = "You have to login before Ban\n";
+				fclose(fRead);
+				free(sbUser_Temp);
+				send_Msg(nSock, sizeof("You have to login befor Ban\n"), sMessage);
+				pthread_mutex_unlock(&pMutx);
+				return;
+			}
+			//Ban name is not me and In User List
+			else if(nSock == asUser_Current[ii].nFileDiscript && (strcmp(sID_Temp, sbUser_Temp->sID) == 0))
+			{
+				for(a=0; a<FLAG_USER_NUM; a++)
+				{
+					if(asUser_Current[ii].nVenID[a] = 0)
+					{
+						asUser_Current[ii].nVenID[a] = sbUser_Temp->nFileDiscript;
+						break;
+					}
+				}
+				sMessage = "Ban success\n";
+				fclose(fRead);
+				free(sbUser_Temp);
+				send_Msg(nSock, sizeof("Ban success\n"),sMessage);
+				pthread_mutex_unlock(&pMutx);
+				return;
+			}
+		}
+	}
+	pthread_mutex_unlock(&pMutx);
+	fclose(fRead);
+	free(sbUser_Temp);
+	sMessage = "Incorrect Use name\n";
+	send_Msg(nSock, sizeof("Incorrect Use name\n"), sMessage);
+	return;
+}
+
+void join_Member(const char * sBuf, const int nSock, const int msgSz)
 {
 	/* String */
 	char sID_temp[BUF_REG];
@@ -215,7 +353,7 @@ void join_member(const char * sBuf, const int nSock, const int msgSz)
 	return;
 }
 
-void login_member(const char * sBuf, const int nSock, const int msgSz)
+void login_Member(const char * sBuf, const int nSock, const int msgSz)
 {
 	/* String */
 	char sID_temp[BUF_REG];
