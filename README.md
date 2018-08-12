@@ -1,7 +1,9 @@
 # Unix-SystemProgramming
 **[System Programming] Team School System Unix Project. (Prof. 정설영)**
 
-* * *
+<p align="center">
+  <img src='http://drive.google.com/uc?export=view&id=1cnytDdubpz-or3lfvFAYJRzryTH6MTgK' /><br>
+</p>
 
 **⌘ Course Goals and Objectives**
 
